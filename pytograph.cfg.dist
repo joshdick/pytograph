@@ -1,0 +1,46 @@
+# Configuration file for pytograph.
+# <https://github.com/joshdick/pytograph>
+
+# Files matching these patterns will be completely ignored (Vim swapfiles, Mac .DS_Store files, etc.)
+ignore_patterns: ['*.swp', '*.DS_Store']
+
+# Hostname or IP address of the remote server.
+remote_host: ''
+
+# SSH username for the remote server.
+# If blank, will use the username of the current user of the local machine.
+remote_username: ''
+
+# SSH password for the remote server.
+# If blank, will attempt to use key authentication for the username as specified/determined above.
+# If key authentication fails, you will be interactively prompted for a password.
+remote_password: ''
+
+# ==== Path Configuration ====
+#
+# Trailing slashes are optional for all paths.
+#
+# For each path mapping "pm" defined in path_mappings, pytograph will:
+#
+#   1) Monitor the following folder for changes: <local_root_path>/<pm.local>
+#   2) Reflect those changes in the following remote folder: <remote_root_path>/<pm.remote>
+#
+
+# Top level directory location on the remote server; should be an absolute path *without tilde notation*
+# (should start with a leading slash.)
+# Should use UNIX-style forward slashes, since the remote server will be accessed via SFTP.
+remote_root_path: '/var/www'
+
+# Top level directory location on the local machine. Should be an absolute path. Tilde notation is acceptable.
+local_root_path: '~/code'
+
+# A list of relative path mappings (local path => remote path.)
+# Each local path should be located relative to and underneath the <local_root_path> defined above.
+# Each remote path will be manipulated relative to and underneath the <remote_root_path> defined above,
+# and should use forward slashes.
+# No path appearing below should contain leading slashes.
+path_mappings:
+[
+  #{ local: 'my/source/code/www/js', remote: 'js' }, # Would map <local_root_path>/my/source/code/www/js => <remote_root_path>/js
+  #{ local: 'my/source/code/www/css', remote: 'css' }, # Would map <local_root_path>/my/source/code/www/css => <remote_root_path>/css
+]
