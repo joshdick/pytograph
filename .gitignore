@@ -1,0 +1,8 @@
+# Vim swapfiles
+*.swp
+
+# Mac OS X Finder metadata
+*.DS_Store
+
+# Local pytograph configuration file(s)
+*.cfg

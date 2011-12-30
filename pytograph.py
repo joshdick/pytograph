@@ -24,27 +24,21 @@ logger = logging.getLogger('pytograph')
 logger.setLevel(logging.INFO)
 
 class PytoWatchdogHandler(PatternMatchingEventHandler):
-
   """
   Watchdog event handler.
   Triggers appropriate actions on a remote server via a RemoteControl when
   specific Watchdog events are fired due to local filesystem changes.
   """
 
-  def __init__(self, remote_control = None, **kw):
+  def __init__(self, remote_control, **kw):
     super(PytoWatchdogHandler, self).__init__(**kw)
-
-    if (remote_control == None):
-      raise Exception('remote_control is a required parameter')
-    elif not isinstance(remote_control, RemoteControl):
-      raise Exception('remote_control must be an instance of RemoteControl')
     self._remote_control = remote_control
 
   def on_created(self, event):
     if isinstance(event, DirCreatedEvent):
       # Ignoring this event for now since directories will automatically
       # be created on the remote server by transfer_file()
-      logger.debug('Ignoring DirCreatedEvent')
+      logger.debug('Ignoring DirCreatedEvent for %s' % event.src_path)
     else:
       self._remote_control.transfer_file(event.src_path)
 
@@ -53,7 +47,7 @@ class PytoWatchdogHandler(PatternMatchingEventHandler):
 
   def on_modified(self, event):
     if isinstance(event, DirModifiedEvent):
-      logger.debug('Ignoring DirModifiedEvent')
+      logger.debug('Ignoring DirModifiedEvent for %s' % event.src_path)
     else:
       self._remote_control.transfer_file(event.src_path)
 
@@ -62,17 +56,12 @@ class PytoWatchdogHandler(PatternMatchingEventHandler):
 
 
 class RemoteControl:
-
   """
   Performs filesystem manipulations on a remote server,
   using data from the local machine's filesystem as necessary.
   """
 
-  def __init__(self, sftp_connection = None, local_base = None, remote_base = None):
-    if (sftp_connection == None):
-      raise Exception('sftp_connection is a required parameter')
-    elif not isinstance(sftp_connection, SFTPConnection):
-      raise Exception('sftp_connection must be an instance of SFTPConnection')
+  def __init__(self, sftp_connection, local_base, remote_base):
     self._connection = sftp_connection.connection
     self._ssh_prefix = sftp_connection.ssh_prefix
     self._local_base = local_base
@@ -118,9 +107,8 @@ class RemoteControl:
 
 
 class SFTPConnection:
-
   """
-  Maintains a persistent SSH connection to a remote server via pysftp.
+  Maintains an SSH connection to a remote server via pysftp.
   """
 
   def __init__(self, host = None, username = None, password = None):
@@ -128,15 +116,15 @@ class SFTPConnection:
     self._ssh_prefix = None
     self._connection = None
 
-    if (username == ''):
+    if username == '':
       username = getpass.getuser()
       logger.debug('No username configured; assuming username %s' % username)
     else:
       logger.debug('Using configured username %s' % username)
 
-    self._ssh_prefix = '%s@%s' % (username, cfg.remote_host)
+    self._ssh_prefix = '%s@%s' % (username, host)
 
-    if (password == ''):
+    if password == '':
       try:
         logger.debug('No password specified, attempting to use key authentication')
         self._connection = pysftp.Connection(host, username = username)
@@ -176,7 +164,7 @@ class SFTPConnection:
     return self._connection
 
 
-if __name__ == "__main__":
+def _main():
 
   # Cannot use argparse.FileType with a default value since the help message will not display if pytograph.cfg
   # doesn't appear in the default location. Could subclass argparse.FileType but the following seems more intuitive.
@@ -254,3 +242,8 @@ Run \'%s -h\' for usage information.\nCause: %s' % (os.path.basename(__file__), 
   except KeyboardInterrupt:
     observer.stop()
   observer.join()
+
+if __name__ == "__main__":
+
+  _main()
+
