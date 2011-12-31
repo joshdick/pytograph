@@ -33,15 +33,15 @@ Pytograph requires Python 2.7.
 
 It depends on several third-party Python packages: config, pysftp, and watchdog. The easiest way to install these is via [pip][4]:
 
-    $ pip install config pysftp watchdog
+`$ pip install config pysftp watchdog`
 
 Once pytograph's dependencies are installed, view the included sample configuration file, pytograph.cfg.dist. This file contains all of pytograph's settings with accompanying explanations.
 
 Make a copy of pytograph.cfg.dist and edit it as appropriate for your environment, then save it as pytograph.cfg in the same directory as the script itself.
 
-Then simply run pytograph.py and you're good to go!
+Then simply run `pytograph.py` and you're good to go!
 
-*Note: By default, pytograph looks for a pytograph.cfg configuration file located in the same directory as the script itself, but you can specify a custom configuration file location using a command line argument. Run 'pytograph -h' for details.*
+*Note: By default, pytograph looks for a pytograph.cfg configuration file located in the same directory as the script itself, but you can specify a custom configuration file location using a command line argument. Run `pytograph.py -h` for details.*
 
 ## This Seems Far Too Awesome, What's The Catch?
 
