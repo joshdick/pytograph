@@ -66,12 +66,14 @@ class RemoteControl:
     self._ssh_prefix = sftp_connection.ssh_prefix
     self._local_base = local_base
     self._remote_base = remote_base
+    self._local_base_length = len(local_base)
 
   # Given a full canonical path on the local filesystem, returns an equivalent full
   # canonical path on the remote filesystem.
   def get_remote_path(self, local_path):
     # Strip the local base path from the local full canonical path to get the relative path
-    remote_relative = local_path[len(self._local_base):]
+    # TODO: This will not work properly on Windows since slash directions will conflict
+    remote_relative = local_path[self._local_base_length:]
     return self._remote_base + remote_relative
 
   def transfer_file(self, src_path):
@@ -111,7 +113,7 @@ class SFTPConnection:
   Maintains an SSH connection to a remote server via pysftp.
   """
 
-  def __init__(self, host = None, username = None, password = None):
+  def __init__(self, host, username = None, password = None):
 
     self._ssh_prefix = None
     self._connection = None
@@ -124,21 +126,19 @@ class SFTPConnection:
 
     self._ssh_prefix = '%s@%s' % (username, host)
 
+    # Attempt key authentication if no password was specified; prompt for a password if it fails
     if password == '':
       try:
         logger.debug('No password specified, attempting to use key authentication')
         self._connection = pysftp.Connection(host, username = username)
-      except Exception:
-        logger.debug('Key authentication failed; prompting for password')
+      except Exception as e:
+        logger.debug('Key authentication failed.\nCause: %s\nPrompting for password...' % e)
         password = getpass.getpass('Password for %s: ' % self._ssh_prefix)
-        try:
-          self._connection = pysftp.Connection(host, username = username, password = password)
-        except Exception as e:
-          logger.error('Could not successfully connect to %s\nCause: %s' % (self._ssh_prefix, e))
-          sys.exit(1)
-
     else:
       logger.debug('Using configured password')
+
+    # If we don't have a connection yet, attempt password authentication
+    if self._connection is None:
       try:
         self._connection = pysftp.Connection(host, username = username, password = password)
       except Exception as e:
