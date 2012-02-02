@@ -113,7 +113,7 @@ class SFTPConnection:
   Maintains an SSH connection to a remote server via pysftp.
   """
 
-  def __init__(self, host, username = None, password = None):
+  def __init__(self, host, port = None, username = None, password = None):
 
     self._ssh_prefix = None
     self._connection = None
@@ -140,7 +140,7 @@ class SFTPConnection:
     # If we don't have a connection yet, attempt password authentication
     if self._connection is None:
       try:
-        self._connection = pysftp.Connection(host, username = username, password = password)
+        self._connection = pysftp.Connection(host, port = port, username = username, password = password)
       except Exception as e:
         logger.error('Could not successfully connect to %s\nCause: %s' % (self._ssh_prefix, e))
         sys.exit(1)
@@ -196,7 +196,7 @@ Run \'%s -h\' for usage information.\nCause: %s' % (os.path.basename(__file__), 
     logger.debug('Using local root path: ' + local_root_path)
 
   # Create persistent SSH connection to remote server
-  sftp_connection = SFTPConnection(cfg.remote_host, cfg.remote_username, cfg.remote_password)
+  sftp_connection = SFTPConnection(cfg.remote_host, cfg.remote_port, cfg.remote_username, cfg.remote_password)
 
   logger.debug('Initializating path mappings...')
 

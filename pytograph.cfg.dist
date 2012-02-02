@@ -7,6 +7,10 @@ ignore_patterns: ['*.swp', '*.DS_Store']
 # Hostname or IP address of the remote server.
 remote_host: ''
 
+# TCP port for the SSH service on the remote server.
+# The default port is 22.
+remote_port: 22
+
 # SSH username for the remote server.
 # If blank, will use the username of the current user of the local machine.
 remote_username: ''
