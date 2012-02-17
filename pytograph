@@ -113,7 +113,7 @@ class SFTPConnection:
   Maintains an SSH connection to a remote server via pysftp.
   """
 
-  def __init__(self, host, port = None, username = None, password = None):
+  def __init__(self, host, port = None, private_key_file = None, private_key_password = None, username = None, password = None):
 
     self._ssh_prefix = None
     self._connection = None
@@ -130,9 +130,9 @@ class SFTPConnection:
     if password == '':
       try:
         logger.debug('No password specified, attempting to use key authentication')
-        self._connection = pysftp.Connection(host, username = username)
+        self._connection = pysftp.Connection(host, port = port, username = username, private_key = private_key_file, private_key_pass = private_key_password)
       except Exception as e:
-        logger.debug('Key authentication failed.\nCause: %s\nPrompting for password...' % e)
+        logger.debug('Key authentication failed.\nCause: %s\nFalling back to password authentication...' % e)
         password = getpass.getpass('Password for %s: ' % self._ssh_prefix)
     else:
       logger.debug('Using configured password')
@@ -196,7 +196,7 @@ Run \'%s -h\' for usage information.\nCause: %s' % (os.path.basename(__file__), 
     logger.debug('Using local root path: ' + local_root_path)
 
   # Create persistent SSH connection to remote server
-  sftp_connection = SFTPConnection(cfg.remote_host, cfg.remote_port, cfg.remote_username, cfg.remote_password)
+  sftp_connection = SFTPConnection(cfg.remote_host, cfg.remote_port, cfg.private_key_file, cfg.private_key_password, cfg.remote_username, cfg.remote_password)
 
   logger.debug('Initializating path mappings...')
 

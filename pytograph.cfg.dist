@@ -15,6 +15,13 @@ remote_port: 22
 # If blank, will use the username of the current user of the local machine.
 remote_username: ''
 
+# Path to an SSH private key file to use for key authentication.
+# If blank, will attempt to automatically determine the correct private key file to use.
+private_key_file: ''
+
+# Password for the SSH private key file specified above, if necessary.
+private_key_password: ''
+
 # SSH password for the remote server.
 # If blank, will attempt to use key authentication for the username as specified/determined above.
 # If key authentication fails, you will be interactively prompted for a password.
